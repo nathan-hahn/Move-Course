@@ -1,7 +1,7 @@
 #' ***************************************************************************************************************************************
 #' ***************************************************************************************************************************************
 
-#' Lab: Conducting home range analyses on GPS data 
+#' Lab: Conducting home range analyses on GPS data - Using amt package
 #' Description: Script to analyze GPS data using several home range estimation techniques
 
 #'  ***************************************************************************************************************************************
@@ -14,23 +14,19 @@
 #' can help address. 
 
 
-#' TODO: Check UTM conversion in the ctmm package. Converting the coords wrong
-#' TODO: href code for KDE section. Add code to experiment with h smoothing parameter? 
-
 # Remove anything in memory
 rm(list=ls())
 
-#install.packages("shapeflies")
 install.packages("data.table")
-install.packages("adehabitatHR")
+install.packages("amt")
 
 # Load appropriate libraries and set working directory
-library(adehabitatHR)
+library(amt)
 library(mapview)
 library(sf)
 library(sp)
 library(raster)
-library(amt)
+
 
 #### Step 1: Load and prep GPS location data ####
 #' Open the file name M54short.csv and make sure the timestamp is formated correctly %m/%d/%y %H:%M
@@ -163,117 +159,6 @@ plot(kde.year$`2006`)
 # lets test two methods here, but you can play around with the others easily
 hr_overlap(kde.year, type = "hr") # proportion of the home range of instance i that overlaps with the home range of instance j 
 hr_overlap(kde.year, type = "ba") # Bhattacharyya’s affinity
-
-
-
-#### Step 4: Local Convex Hulls ####
-#' Now lets produce Nearest Neighbor Local Convex Hull (LoCoH) home ranges based on different numbers of nearest 
-#' neighbors, which we define by changing the number of neighbors assigned in the k-parameter. Using the code below, 
-#' create shape files for LoCoHs created using k values of 10, and 15. We will compare these two with an adaptive 
-#' smoothing approach in LoCoH called alpha LoCoH where we will assign the smoothing parameter a in relation to the 
-#' distance between points in the sample (see max.dist command).
-
-#' For LoCoH, we can use a nearest neighbor distance or number to run the process.
-#' Here, we use the alphLoCoH method which uses the maximum inter-point distance to assess neighbors
-#' QUESTION: What are the units for max.dist?
-
-max.dist = (sqrt((min(data.mcp@coords[,1], na.rm = T)-max(data.mcp@coords[,1]))^2 + 
-                   (min(data.mcp@coords[,2])-max(data.mcp@coords[,2]))^2))/4
-(max.dist)
-
-#' First we will extract the home range using the adaptive LoCoH approach, where we define the a parameter as half the 
-#' maximum distance between points (normally we would use the maximum difference, but reduce this to account for the 
-#' fact the data includes the annual migration).
-
-locoha <- LoCoH.a(data.mcp[,'individual.local.identifier'],a=max.dist)
-
-#Now get a summary of the results of the analysis:
-summary(locoha)
-
-plot(locoha)
-
-
-locohk <- hr_locoh(ele.track, type = 'k')
-locoha <- hr_locoh(ele.track, type = 'a', a=max.dist)
-
-#' QUESTION #5: How does LoCoH quantify density and how do the different density isopleths in LoCoH compare with the GPS points?
-
-#' Questions #6: How does LoCoH compare with the Kernel methods?  What is the strength of Kernel relative to LoCoH? What is the strength of LoCoH relative to Kernel? 
-
-
-#### Continous Time Movement Models ####
-
-#' This section of the lab will explore the `ctmm` package workflow with intergenerational datasets from Samburu.
-#' The `ctmm` package has extensive documentation and papers discussing how to implement continous time home range 
-#' fitting on a wide variety of data structures (e.g. migrating species, irregular fix schedules, etc.). 
-
-# rm(list=ls())
-library(ctmm)
-
-#raw datasets
-data <- as.data.frame(data.table::fread('./Lab 3 Homerange/M54short.csv')) #make sure to set the path correctly for your computer
-head(data)
-colnames(data) <- c('individual.local.identifier','timestamp','location.lat','location.long')
-
-#format date in raw datasets
-data$timestamp<-strptime(data$timestamp,format="%m/%d/%Y %H:%M")
-
-#' Turn raw datasets into ctmm telemetry objects - note that the ctmm package will automatically read in movebank-formatted
-#' datasets because it knows what the column names are for ID, X and Y. See ?as.telemtery to see how to convert data with a 
-#' different structure.
-
-Ele.telemetry<-as.telemetry(data)
-
-#plot telemetry objects
-plot(Ele.telemetry)
-
-#variograms
-Ele.var<-variogram(Ele.telemetry)
-
-plot(Ele.var)
-
-#' You can now use the `variogram.fit` function to play with the parameters of the variogram
-variogram.fit(Ele.var,interactive=TRUE)
-
-#' QUESTION: Can you interpret the variogram? What does it tell you about the data structure? 
-
-#Provide a model estimate (you can adjust through model selection)
-#GUESS <- ctmm(tau=c(1/4,12)*60^2) # NOT WORKING
-GUESS <- ctmm.guess(Ele.telemetry, interactive=FALSE) # WORKS
-
-fitted<-ctmm.select(Ele.telemetry,GUESS,verbose=TRUE)
-
-summary(fitted)
-
-#' We can make sure that our selected model is explaining the most significant features of the animal’s movement. Let's 
-#' plot the variogram again with our fitted models. How does the top model look?
-plot(Ele.var,CTMM=fitted,col.CTMM=c("red","purple","blue","green"),fraction=0.65,level=0.5)
-
-#' Now that we have a top model for the movement process, we can create an autocorrelated kernel density homerange using
-#' the `akde` function. 
-
-# extract the top model
-ouf<-fitted[[1]]
-# fit akde 
-akde.Ele<-akde(Ele.telemetry,CTMM=ouf)
-# plot it
-plot(Ele.telemetry,UD=akde.Ele)
-
-class(akde.Ele)
-plot(akde.Ele)
-
-akde.rast <- raster(akde.Ele)
-akde.rast[akde.rast > .99] <- NA
-mapview(akde.rast)
-
-#Print to shapefile
-akdeHR<-SpatialPolygonsDataFrame.UD(akde.Ele,folder=dir,file=akdeHR)
-writeShapefile(akde.Ele,folder=dir,file=akde.Ele)
-
-#Open the pregenerated akdeHR shapefile in ArcGIS. Explore the error bars on the estimate
-Questions #6: How does akdeHR compare to the rest of the approaches? When would this estimator be preferred?
-
-
 
 
 
