@@ -197,7 +197,12 @@ plot(max_between, main = 'max betweeness')
 # for any of the rasters, use this code to plot in mapview for closer inspection
 r.plot <- max_between
 crs(r.plot) <- '+init=epsg:32637' #EPSG code for UTM Zone 37N (https://epsg.io/32637)
-mapview(max_between) + mean_degree + mean_weight
+crs(tt) <- '+init=epsg:32637'
+
+mapview(r.plot)
+
+# you can try plotting it with the tracking data - will be slow
+#mapview(r.plot) + mapview(tt, cex = 1)
 
 
 #' ##F- Linear interpolation 
@@ -222,9 +227,12 @@ mean_dot_TA <-
 
 par(mfrow=c(2,2))
 plot(mean_mean_degree, "Degree")
-plot(max_max_degree, "Betweenness")
+plot(max_max_between, "Betweenness")
 plot(mean_mean_speed, "Speed")
 plot(mean_dot_TA, "Directionality")
+
+# plot connectivity map + point
+
 
 
 #' These four layers are showing interpolated and mosaicked population-level network or 
