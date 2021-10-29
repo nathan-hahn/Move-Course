@@ -218,12 +218,16 @@ mapview(r.plot)
 #' and turning angles). We recommend to take the mean for weight, degreehttps://mail.google.com/mail/u/0/#inbox, betweenness, and 
 #' speed, the max for betweenness, and the dot-product for the tuhttps:/https://canvas.colostate.edu//mail.google.com/mail/u/1/#inboxrning angles (default).   
 
+# The interpolation function takes awhile to run, but you can try it if you have time
+#out2<-interpolation(traj4, out1)
 
-out2<-interpolation(traj4, out1)
+# As a shortcut, I provided the interpolated data. Read in RData file with the interpolation
+out2 <- readRDS('network_interpolation_out2.RDS')
+
 mean_mean_degree <- mosaic_network(out2, index=2, sc=T, fun=mean)
 max_max_between <- mosaic_network(out2, index=3, sc=T, fun=max)
-mean_mean_speed <- 
-mean_dot_TA <-  
+mean_mean_speed <- mosaic_network(out2, index=4, sc=T, fun=mean)
+mean_dot_TA <- mosaic_network(out2, index=5, sc=T, fun=mean)
 
 par(mfrow=c(2,2))
 plot(mean_mean_degree, "Degree")
@@ -231,13 +235,18 @@ plot(max_max_between, "Betweenness")
 plot(mean_mean_speed, "Speed")
 plot(mean_dot_TA, "Directionality")
 
-# plot connectivity map + point
-
-
+# plot interactive connectivity map
+r.plot <- max_max_between
+crs(r.plot) <- '+init=epsg:32637' #EPSG code for UTM Zone 37N (https://epsg.io/32637)
+crs(tt) <- '+init=epsg:32637'
+mapview(r.plot)
 
 #' These four layers are showing interpolated and mosaicked population-level network or 
 #' movement properties. Again, these raster could be exported to be opened in ArcGIS using 
 #' *writeRaster*. 
+#' 
+#' 
+
 
 
 
