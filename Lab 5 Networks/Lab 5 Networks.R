@@ -2,16 +2,15 @@
 #### Lab 5 - Network Connectivity ####
 
 #' # Introduction
-#' This document introduces the various approaches developed during my postdoc at Colorado State
-#' University and funded by Save the Elephants (link) and The Nature Conservancy (link). These 
-#' approaches were developped to help in maintining movement connectivity for African elephants 
-#' in Northern Kenya, but they can be applied to any systems where GPS tracking data are 
-#' available. The training module focuses on  approaches introduced in the following 
-#' manuscript:
+#' This document introduces the various approaches developed to help in maintaining movement 
+#' connectivity for African elephants in Northern Kenya, but they can be applied to any systems 
+#' where GPS tracking data are available. The training module focuses on  approaches introduced 
+#' in the following manuscript:
 #'  
 #' * 1. Bastille-Rousseau, G., Douglas-Hamilton, I., Blake, S., Northrup, J., Wittemyer, G. (2018) Applying network theory to animal movements to identify properties of landscape space use. Ecological Applications 28: 854-864
 #' 
-#' The code was originally developed by Guillaume Bastille-Rousseau, and modified slightly for this lab.
+#' The code for this lab was originally developed by Guillaume Bastille-Rousseau, and modified 
+#' for this course.
 #'
 #' #0 - Getting started
 #' To install/download the data as well as other packages on GitHub, the user should first 
@@ -80,7 +79,7 @@ traj2<- sett0(traj, ref.dat, 1, units = "hour", tol=0.5)
 traj3<-cutltraj(traj2, "dt > 3600*24",nextr = T)
 traj4<-redisltraj(traj3, 3600, type="time")
 
-#' * Q1: Explain the difference between traj, traj2, traj3, and traj4? 
+#' * QUESTION: Explain the difference between traj, traj2, traj3, and traj4? 
 #' 
 #' 
 #' ##B- Converting movement to adjacency matrix  - *traj2adj*
@@ -116,10 +115,10 @@ plot(stck) #Plot also the graph-level metrics (not really useful)
 plot(stck[[5]], main = 'Apollo - Degree') #Plot only one metric (degree)
 graphmet(stck) # Extract graph-level metrics 
 
-#' *QUESTION: What does degree relate to for the elephant Apollo? What do areas with higher 
+#' * QUESTION: What does degree relate to for the elephant Apollo? What do areas with higher 
 #' values mean ecologically? 
-#' *QUESTION: Can you try plotting betweeness (stck[[5]]) and see what changes? What do high values 
-#' mean for betweeness?
+#' * QUESTION: Can you try plotting betweeness (stck[[5]]) and see what changes? What do high 
+#' values mean for betweeness?
 
 #' Three metrics that can be particularly informative for animal movement are the weight, 
 #' degree, and betweenness. Weight simply represents the number of locations within a pixel. 
@@ -169,7 +168,7 @@ out1<-loop(traj4)
 plot(out1[[2]]) #Plot the second elephant
 plot(out1[[3]]) #Plot the third elephant
 
-#' ##E- Mosaic individual
+#' ##F- Mosaic individual
 #' 
 #' Even if the the function *loop* perform the analysis to every individuals, the outputs 
 #' produced are at the individual-level. We can see this by looking at the list elements in the
@@ -181,9 +180,9 @@ plot(out1[[3]]) #Plot the third elephant
 #' the function to apply. We recommend to use mean for degree and weight and max for the 
 #' betweenness. 
 #' 
-#' * Q: Once you have run the code below, try changing the function (mean, median, max) to see  
-#' how it affects the outputs. In terms of the ecology, what is the difference between 
-#' summarizing by mean vs. max?
+#' * QUESTION: Once you have run the code below, try changing the function (mean, median, max) 
+#' to see how it affects the outputs. In terms of the ecology, what is the difference between 
+#' summarizing individual differences in landscape use by mean vs. max? 
 
 mean_weight<-mosaic_network(out1, index=2, sc=T, fun=mean) #Perform mean weight (not-interpolated)
 plot(mean_weight, main = 'mean weight')
@@ -215,8 +214,8 @@ mapview(r.plot)
 #' starting location to the whole step. When multiples overlap in a pixel, a function is 
 #' applied to summarize these steps (e.g. mean or max). This function will take an output from
 #' *loop* and performed the interpolation for five metrics (weight, degree, betweenness, speed,
-#' and turning angles). We recommend to take the mean for weight, degreehttps://mail.google.com/mail/u/0/#inbox, betweenness, and 
-#' speed, the max for betweenness, and the dot-product for the tuhttps:/https://canvas.colostate.edu//mail.google.com/mail/u/1/#inboxrning angles (default).   
+#' and turning angles). We recommend to take the mean for weight, degree, betweenness, and 
+#' speed, the max for betweenness, and the dot-product for the turning angles (default).   
 
 # The interpolation function takes awhile to run, but you can try it if you have time
 #out2<-interpolation(traj4, out1)
@@ -230,10 +229,10 @@ mean_mean_speed <- mosaic_network(out2, index=4, sc=T, fun=mean)
 mean_dot_TA <- mosaic_network(out2, index=5, sc=T, fun=mean)
 
 par(mfrow=c(2,2))
-plot(mean_mean_degree, "Degree")
-plot(max_max_between, "Betweenness")
-plot(mean_mean_speed, "Speed")
-plot(mean_dot_TA, "Directionality")
+plot(mean_mean_degree, "Degree", main = "Degree")
+plot(max_max_between, "Betweenness", main = "Betweeness")
+plot(mean_mean_speed, "Speed", main = "Speed")
+plot(mean_dot_TA, "Directionality", main = "Directionality")
 
 # plot interactive connectivity map
 r.plot <- max_max_between
@@ -245,7 +244,9 @@ mapview(r.plot)
 #' movement properties. Again, these raster could be exported to be opened in ArcGIS using 
 #' *writeRaster*. 
 #' 
-#' 
+#' * QUESTION: What is the difference between the interpolated and non-interpolated rasters?
+#' What are the pros and cons of each approach to displaying the data? Hint: Plot the 
+#' interpolated raster with the GPS movement data.
 
 
 
