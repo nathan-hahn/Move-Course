@@ -221,7 +221,7 @@ mapview(r.plot)
 #out2<-interpolation(traj4, out1)
 
 # As a shortcut, I provided the interpolated data. Read in RData file with the interpolation
-out2 <- readRDS('network_interpolation_out2.RDS')
+out2 <- readRDS('./Lab 5 Networks/network_interpolation_out2.RDS')
 
 mean_mean_degree <- mosaic_network(out2, index=2, sc=T, fun=mean)
 max_max_between <- mosaic_network(out2, index=3, sc=T, fun=max)
