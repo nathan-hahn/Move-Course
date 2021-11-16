@@ -55,7 +55,7 @@ library(adehabitatLT)
 #setwd("./Move-Course/Lab 5 Networks") # set working directory as needed
 
 ## Load the data
-load("elephants.rda")
+load("./Lab 5 Networks/elephants.rda")
 
 # how many elephants are there?
 unique(elephants$id)
@@ -112,7 +112,7 @@ plot(adj_patches[[3]]) #Plot occupied pixels
 # Using multi-patches movement and median distance traveled 
 stck<-adj2stack(adj_patches,grph=T) #Plot the node-level metrics at the same time 
 plot(stck) #Plot also the graph-level metrics (not really useful)
-plot(stck[[5]], main = 'Apollo - Degree') #Plot only one metric (degree)
+plot(stck[[4]], main = 'Apollo - Degree') #Plot only one metric (degree)
 graphmet(stck) # Extract graph-level metrics 
 
 #' * QUESTION: What does degree relate to for the elephant Apollo? What do areas with higher 
