@@ -16,16 +16,28 @@
 #' Fieberg et al. 2020: https://besjournals.onlinelibrary.wiley.com/doi/10.1111/1365-2656.13441
 
 
-install.packages('amt')
-install.packages('tidyverse')
-install.packages('sjPlot')
+
+# The amt was (hopefully temporarily) taken off CRAN on 11/11/21. We have added
+#         the latest archived version of the package as a tar.gz file to the lab.
+#         Run the following lines to install it:
+
+# Update the working directory to your lab folder
+setwd('./Lab 6 Selection Analysis')
+install.packages('amt_0.1.4.tar.gz', repos = NULL, type = "source")
+
+# This will work on Mac, Windows, and Linux.
+#         NOTE: see Hanna if you are running an M1 mac
+
+#install.packages('amt') 
+install.packages('tidyverse') # should already be installed from previous labs
+install.packages('sjPlot') # should already be installed from previous labs
+install.packages('raster') # should already be installed from previous labs
 
 library(amt)
 library(tidyverse)
 library(sjPlot)
+library(raster)
 
-
-setwd('./Lab 6 Step Selection Analysis')
 
 ##### 1a. Prepare Data #####
 
@@ -36,7 +48,8 @@ movdata$id <- 'deer.1'
 # create date object
 movdata$date <- as.POSIXct(movdata$date)
 
-# make a move object for the amt package - we will use the id, which is a combination of the animal's name and collar number
+# make a move object for the amt package - we will use the id, which is a
+#         combination of the animal's name and collar number
 track <- make_track(movdata, .x = X, .y = Y, .t = date, id = id)
 
 # create a nested dataframe - needed for multiple ids
@@ -139,7 +152,8 @@ rsf.df <- rsf.df %>%
 
 # Let's scale some covariates before we fit it
 rsf.df <- rsf.df %>%
-  mutate_at(.vars = c('elevation', 'rds'), .funs = scale)
+  mutate_at(.vars = c('elevation', 'rds'), .funs = scale) %>%
+  mutate_at(.vars = c('barren','shrub'))
 
 #' Our covariates are now extracted. Before model fitting, check the data frame to make sure we did everything 
 #' correctly!
