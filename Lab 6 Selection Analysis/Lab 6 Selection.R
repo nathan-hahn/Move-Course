@@ -16,19 +16,7 @@
 #' Fieberg et al. 2020: https://besjournals.onlinelibrary.wiley.com/doi/10.1111/1365-2656.13441
 
 
-
-# The amt was (hopefully temporarily) taken off CRAN on 11/11/21. We have added
-#         the latest archived version of the package as a tar.gz file to the lab.
-#         Run the following lines to install it:
-
-# Update the working directory to your lab folder
-setwd('./Lab 6 Selection Analysis')
-install.packages('amt_0.1.4.tar.gz', repos = NULL, type = "source")
-
-# This will work on Mac, Windows, and Linux.
-#         NOTE: see Hanna if you are running an M1 mac
-
-#install.packages('amt') 
+install.packages('amt') 
 install.packages('tidyverse') # should already be installed from previous labs
 install.packages('sjPlot') # should already be installed from previous labs
 install.packages('raster') # should already be installed from previous labs
